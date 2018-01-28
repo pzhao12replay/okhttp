@@ -33,7 +33,12 @@ public final class HttpMethod {
   }
 
   public static boolean permitsRequestBody(String method) {
-    return !(method.equals("GET") || method.equals("HEAD"));
+    return requiresRequestBody(method)
+        || method.equals("OPTIONS")
+        || method.equals("DELETE")    // Permitted as spec is ambiguous.
+        || method.equals("PROPFIND")  // (WebDAV) without body: request <allprop/>
+        || method.equals("MKCOL")     // (WebDAV) may contain a body, but behaviour is unspecified
+        || method.equals("LOCK");     // (WebDAV) body: create lock, without body: refresh lock
   }
 
   public static boolean redirectsWithBody(String method) {
